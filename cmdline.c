@@ -198,67 +198,67 @@ int cmdline_process_param(const char *p, char *value,
              * else).
              */
 
-			 /*
-			 * If the argument starts with "telnet:", set the
-			 * protocol to Telnet and process the string as a
-			 * Telnet URL.
-			 *
-			 * Skip the "telnet:" or "telnet://" prefix.
-			 *
-			 * "ssh" is the same as "telnet"
-			 */
+             /*
+             * If the argument starts with "telnet:", set the
+             * protocol to Telnet and process the string as a
+             * Telnet URL.
+             *
+             * Skip the "telnet:" or "telnet://" prefix.
+             *
+             * "ssh" is the same as "telnet"
+             */
 
-			bool protol_flag = true;
-			const char *ssh_prefix = "ssh:", *telnet_prefix = "telnet:";
-			if (!strncmp(p, ssh_prefix, strlen(ssh_prefix))) {
-				p += strlen(ssh_prefix);
+            bool protol_flag = true;
+            const char *ssh_prefix = "ssh:", *telnet_prefix = "telnet:";
+            if (!strncmp(p, ssh_prefix, strlen(ssh_prefix))) {
+                p += strlen(ssh_prefix);
 
-				conf_set_int(conf, CONF_protocol, PROT_SSH);
-				conf_set_int(conf, CONF_port, 22);
+                conf_set_int(conf, CONF_protocol, PROT_SSH);
+                conf_set_int(conf, CONF_port, 22);
 
-			} else if (!strncmp(p, telnet_prefix, strlen(telnet_prefix))) {
-				p += strlen(telnet_prefix);
+            } else if (!strncmp(p, telnet_prefix, strlen(telnet_prefix))) {
+                p += strlen(telnet_prefix);
 
-				conf_set_int(conf, CONF_protocol, PROT_TELNET);
-				conf_set_int(conf, CONF_port, 23);
+                conf_set_int(conf, CONF_protocol, PROT_TELNET);
+                conf_set_int(conf, CONF_port, 23);
 
-			} else {
-				protol_flag = false;
-			}
+            } else {
+                protol_flag = false;
+            }
 
-			if (protol_flag) {
-				if (p[0] == '/' && p[1] == '/')
-					p += 2;
+            if (protol_flag) {
+                if (p[0] == '/' && p[1] == '/')
+                    p += 2;
 
-				/*
-				* The next thing we expect is a host name.
-				*/
-				{
-					const char *host = p;
-					char *buf;
+                /*
+                * The next thing we expect is a host name.
+                */
+                {
+                    const char *host = p;
+                    char *buf;
 
-					p += host_strcspn(p, ":/");
-					buf = dupprintf("%.*s", (int)(p - host), host);
-					conf_set_str(conf, CONF_host, buf);
-					sfree(buf);
-					seen_hostname_argument = true;
-				}
+                    p += host_strcspn(p, ":/");
+                    buf = dupprintf("%.*s", (int)(p - host), host);
+                    conf_set_str(conf, CONF_host, buf);
+                    sfree(buf);
+                    seen_hostname_argument = true;
+                }
 
-				/*
-				* If the host name is followed by a colon, then
-				* expect a port number after it.
-				*/
-				if (*p == ':') {
-					p++;
+                /*
+                * If the host name is followed by a colon, then
+                * expect a port number after it.
+                */
+                if (*p == ':') {
+                    p++;
 
-					conf_set_int(conf, CONF_port, atoi(p));
-					/*
-					* Set the flag that will stop us from treating
-					* the next argument as a separate port; this one
-					* counts as explicitly provided.
-					*/
-					seen_port_argument = true;
-				}
+                    conf_set_int(conf, CONF_port, atoi(p));
+                    /*
+                    * Set the flag that will stop us from treating
+                    * the next argument as a separate port; this one
+                    * counts as explicitly provided.
+                    */
+                    seen_port_argument = true;
+                }
             } else {
                 char *user = NULL, *hostname = NULL;
                 const char *hostname_after_user;
